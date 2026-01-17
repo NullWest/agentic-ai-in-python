@@ -1,0 +1,110 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list/
+tramp
+.org-id-locations
+
+# Editors/IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# General build artifacts
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+*.pid
+*.seed
+*.seed
+*.orig
+
+# Coverage and test output
+.coverage
+coverage/
+htmlcov/
+.pytest_cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+*.egg
+build/
+dist/
+.tox/
+.nox/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+
+# Node
+node_modules/
+
+# Rust
+/target/
+
+# Go
+/bin/
+/pkg/
+
+# Java/Gradle/Maven
+.gradle/
+
+# C/C++/Make
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Misc
+.cache/
+.tmp/
+.tmp*/
+.env
+.env.*
