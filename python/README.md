@@ -1,44 +1,34 @@
 # Python Assignments
 
 ## Overview
-This repository contains small, focused Python assignments. Each problem lives in its own folder with a clear prompt, examples, and a test suite. Your job is to implement the functions in each `solution.py` file and then run the tests.
+This is a series of small Python assignments intended to help software developers unfamiliar with python practice some of the key challenges that will occur in later Agentic AI development.
+The first series "data_structures" focuses on sorting and searching arrays.  The second is centered around data streams and parallel processing.
 
-## Environment
-- Python 3.11
+Each problem lives in its own folder containing the instructions in a README.md, a test suite, and a template solutions file. Your job is to implement the functions in each `solution.py` file and then run the tests.
 
-## Install pytest
-From the repository root:
-```bash
-docker run --rm -v "$PWD":/work -w /work python:3.11 bash -lc "pip install pytest && pytest -q"
-```
+## Docker
 
-## Dockerfile (optional)
-Build once, then reuse:
+We recommend using Docker for your agentic AI projects. Docker for provides a controlled, isolated runtime that encapsulates the Python interpreter, system libraries, and all application dependencies into a single, predictable environment. Python packages often rely on native system components (such as SSL libraries, image codecs, or database drivers) that can behave differently across operating systems or even across machines running the same OS. Docker eliminates this variability by ensuring the same versions of Python, OS-level dependencies, and packages are used everywhere. This isolation also protects the host system by preventing dependency conflicts, reducing the risk of accidental system-level changes, and allowing developers to experiment or upgrade libraries without impacting other projects or the underlying machine
+
+
+## Dockerfile
+To build Docker for the first time, run the following on the root directory:
 ```bash
 docker build -t python-assignments .
-docker run --rm -v "$PWD":/work -w /work python-assignments pytest -q
 ```
 
-## Navigation
-- `python/data_structures/` - search and validation problems (arrays, matrices, Sudoku)
-- `python/concurrency/` - thread coordination, race conditions, and scheduling
+The specific commands for running Docker within the directory are listed on each README.
 
-## Suggested Order
+
+## Suggested Assignment Order
+1. data_structures/sudoku_checker_problem
 1. data_structures/search_first_occurrence_k
-2. data_structures/search_cyclically_sorted_array
-3. data_structures/search_2d_sorted_array
-4. data_structures/sudoku_checker_problem
-5. concurrency/analyze_unsynchronized_threads
-6. concurrency/sync_interleaving_threads
-7. concurrency/timer_class
-
-## Common pitfalls
-- Skipping edge cases like empty inputs, single-element inputs, or missing targets.
-- Assuming concurrency tests are deterministic; use proper synchronization and join threads.
-- Forgetting to run tests from the correct directory or using the wrong Python version.
+1. data_structures/search_cyclically_sorted_array
+1. data_structures/search_2d_sorted_array
+1. concurrency/analyze_unsynchronized_threads
+1. concurrency/sync_interleaving_threads
+1. concurrency/timer_class
 
 ## No AI usage
 Do not use AI assistants (Cursor/Claude/ChatGPT) to solve these problems. The goal is to build fundamentals: invariants, edge cases, and test-driven reasoning. AI-generated answers are often unreliable for concurrency, scheduling, and tricky edge cases.
 
-## Optional background
-If you want extra context for threading concepts, "Black Hat Python" is a useful optional background read.
