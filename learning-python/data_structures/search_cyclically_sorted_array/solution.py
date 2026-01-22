@@ -47,4 +47,4 @@ if __name__ == "__main__":
     target = 2
     print("array:", sample)
     print("k:", target)
-    print( search_cyclically_sorted(sample, target))
+
