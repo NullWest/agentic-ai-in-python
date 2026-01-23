@@ -8,9 +8,33 @@ def search_2d_sorted(matrix: List[List[int]], k: int) -> Optional[Tuple[int, int
 
     Each row is sorted left-to-right and each column is sorted top-to-bottom.
     """
-    # TODO: implement a linear-time (m + n) search
-    raise NotImplementedError
 
+    if not matrix:
+        return None
+
+    row = 0
+    col = len(matrix[0]) - 1
+    row_limit = len(matrix) - 1
+
+    while matrix[row][col] != k:
+        if matrix[row][col] == k:
+            return row, col
+
+        if matrix[row][col] > k:
+            col -= 1
+        else:
+            if row == row_limit:
+                return None
+
+            current_row_length = len(matrix[row])
+            next_row_length = len(matrix[row + 1])
+
+            if next_row_length < current_row_length:
+                col -= 1
+
+            row += 1
+
+    return row, col
 
 if __name__ == "__main__":
     sample = [
@@ -21,4 +45,3 @@ if __name__ == "__main__":
     target = 5
     print("matrix:", sample)
     print("k:", target)
-    # TODO: call search_2d_sorted and print the result
