@@ -8,8 +8,30 @@ def search_first_occurrence(arr: List[int], k: int) -> int:
 
     Use a binary-search style approach. Return -1 if k is absent.
     """
-    # TODO: implement a logarithmic-time search for the first occurrence
-    raise NotImplementedError
+
+    if len(arr) == 0:
+        return -1
+
+    left = 0
+    right = len(arr) - 1
+    last_found_index = -1
+
+    while left <= right:
+        middle = (left + right) // 2
+
+        if arr[middle] == k:
+            last_found_index = middle
+
+            right = middle -1
+
+            continue
+
+        if arr[middle] < k:
+            left = middle + 1
+        else:
+            right = middle - 1
+
+    return last_found_index
 
 
 if __name__ == "__main__":
@@ -17,4 +39,5 @@ if __name__ == "__main__":
     target = 2
     print("array:", sample)
     print("k:", target)
-    # TODO: call search_first_occurrence and print the result
+
+    print(search_first_occurrence(sample, target))
