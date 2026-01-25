@@ -4,18 +4,22 @@ import os.path
 import argparse
 
 class DirectoryTree:
-    executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
-    paths: dict[str, dict] = {}
-    futures: list[concurrent.futures.Future] = []
+    def __init__(self, initial_path: str, only_directories = False, show_summary_line = False)->None:
+        self.initial_path = initial_path
+        self.only_directories = only_directories
+        self.show_summary_line = show_summary_line
 
-    def __init__(self, initial_path: str)->None:
-        self.read(os.path.abspath(initial_path), self.paths)
-        self.display(self.paths)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
+        self.paths = {}
+        self.futures = []
 
-    @classmethod
-    def read(cls, directory: str, node: dict)->None:
+    def handle(self):
+        self.__read(os.path.abspath(self.initial_path), self.paths)
+        self.__display(self.paths)
+
+    def __read(self, directory_path: str, node: dict)->None:
         try:
-            with os.scandir(directory) as entries:
+            with os.scandir(directory_path) as entries:
                 for entry in entries:
                     name = entry.name
                     path = entry.path
@@ -26,21 +30,20 @@ class DirectoryTree:
                     if entry.is_dir(follow_symlinks=False):
                         node[name] = {}
 
-                        future = cls.executor.submit(cls.read, path, node[name])
+                        future = self.executor.submit(self.__read, path, node[name])
 
-                        cls.futures.append(future)
+                        self.futures.append(future)
 
         except FileNotFoundError:
             print(f'Directory {directory} not found.')
         except PermissionError:
             print(f'{directory} Permission denied.')
 
-    @classmethod
-    def display(cls, node: dict, depth: int = 0)->None:
+    def __display(self, node: dict, depth: int = 0)->None:
         should_list = True
 
-        if cls.futures:
-            result = concurrent.futures.wait(cls.futures)
+        if self.futures:
+            result = concurrent.futures.wait(self.futures)
             should_list = bool(result.done)
 
         if should_list:
@@ -50,7 +53,7 @@ class DirectoryTree:
 
                 if isinstance(value, dict):
                     print(name + '/')
-                    cls.display(value, depth + 1)
+                    self.__display(value, depth + 1)
                 else:
                     print(name)
 
@@ -58,7 +61,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('path', type=str, help='Path to directory to display')
+    parser.add_argument('--only-directories', type=bool, default=False, help='Only display directories')
+    parser.add_argument('--show-summary-line', type=bool, default=False, help='Show summary line')
 
     args = parser.parse_args()
 
-    DirectoryTree(args.path)
+    directory = DirectoryTree(initial_path=args.path, only_directories=args.only_directories)
+    directory.handle()
