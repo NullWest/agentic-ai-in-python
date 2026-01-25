@@ -1,8 +1,7 @@
 import concurrent.futures
 import os
 import os.path
-import sys
-
+import argparse
 
 class DirectoryTree:
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
@@ -38,12 +37,16 @@ class DirectoryTree:
 
     @classmethod
     def display(cls, node: dict, depth: int = 0)->None:
-        result = concurrent.futures.wait(cls.futures)
+        should_list = True
 
-        if result.done:
+        if cls.futures:
+            result = concurrent.futures.wait(cls.futures)
+            should_list = bool(result.done)
+
+        if should_list:
             for key in dict(sorted(node.items())):
                 value = node[key]
-                name = ' ' * depth + key
+                name = '  ' * depth + key
 
                 if isinstance(value, dict):
                     print(name + '/')
@@ -52,6 +55,10 @@ class DirectoryTree:
                     print(name)
 
 if __name__ == '__main__':
-    argument_path = sys.argv[1]
+    parser = argparse.ArgumentParser()
 
-    DirectoryTree(argument_path)
+    parser.add_argument('path', type=str, help='Path to directory to display')
+
+    args = parser.parse_args()
+
+    DirectoryTree(args.path)
