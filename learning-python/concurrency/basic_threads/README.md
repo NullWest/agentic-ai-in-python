@@ -181,9 +181,6 @@ example/
 - The program waits for all submitted tasks to finish before printing.
 Output is generated in a single thread to ensure deterministic ordering.
 
-Note: Threading is used mainly for educational purposes. For small directory trees, 
-threading may not provide performance benefits due to overhead.
-
 ---
 
 ## Limitations
