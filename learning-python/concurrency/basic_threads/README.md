@@ -104,3 +104,92 @@ Pick at most one:
 - Include/exclude patterns (glob)
 - Summary line (total files/dirs)
 
+---
+
+# Directory Tree (Python)
+
+A simple Python command-line tool that displays a directory tree structure, similar to the Unix `tree` command.  
+It recursively scans directories and prints their hierarchy in a readable, indented format.
+
+This project was created as a learning exercise focused on filesystem traversal, concurrency, and command-line interface design in Python.
+
+---
+
+## Features
+
+- Recursively displays directory structures
+- Optional flag to display **only directories**
+- Sorted output for deterministic and readable results using lexical sorting
+- Uses `os.scandir` for efficient filesystem access
+- Concurrent directory traversal using `ThreadPoolExecutor`
+- Uses only Python’s standard library
+
+---
+
+## Requirements
+
+- Python 3.9
+
+---
+
+## Usage
+
+Run the script from the command line:
+
+```bash
+python solution.py <path>
+```
+
+Example Output:
+
+```bash
+README.md
+example/
+  a/
+  b/
+    bb/
+  c/
+    cc/
+solution.py
+```
+
+### Available flags:
+
+--only-directories: Only display directories
+
+```bash
+python solution.py <path> --only-directories
+```
+
+Example Output:
+
+```bash
+example/
+  a/
+  b/
+    bb/
+  c/
+    cc/
+```
+
+---
+
+## Concurrency Model
+
+- Directory scanning is performed using a ThreadPoolExecutor.
+- Threads are used only during the directory-reading phase.
+- The program waits for all submitted tasks to finish before printing.
+Output is generated in a single thread to ensure deterministic ordering.
+
+Note: Threading is used mainly for educational purposes. For small directory trees, 
+threading may not provide performance benefits due to overhead.
+
+---
+
+## Limitations
+
+---
+
+1. Symbolic links are ignored to prevent infinite recursion.
+2. Large directory trees may consume significant memory.
+3. Threading overhead may outweigh performance gains for small inputs.
