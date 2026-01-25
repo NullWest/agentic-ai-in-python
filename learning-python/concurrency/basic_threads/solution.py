@@ -10,7 +10,7 @@ class DirectoryTree:
 
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
         self.paths: dict[str, dict] = {}
-        self.futures = []
+        self.futures: list[concurrent.futures.Future] = []
 
     def handle(self)->None:
         self.__read(os.path.abspath(self.initial_path), self.paths)
