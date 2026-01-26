@@ -5,41 +5,31 @@ import argparse
 
 class DirectoryTree:
     def __init__(self, initial_path: str, only_directories = False)->None:
-        self.initial_path: str = initial_path
+        self.initial_path: str = os.path.abspath(initial_path)
         self.only_directories: bool = only_directories
 
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
         self.paths: dict[str, dict] = {}
-        self.futures: list[concurrent.futures.Future] = []
+
 
     def handle(self)->None:
-        self.__read(os.path.abspath(self.initial_path), self.paths)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            executor.submit(self.__read, self.initial_path, self.paths)
 
-        can_list = True
+        self.__display(self.paths)
 
-        if self.futures:
-            result = concurrent.futures.wait(self.futures)
-            can_list = bool(result.done)
-
-        if can_list:
-            self.__display(self.paths)
+        executor.shutdown(wait=True)
 
     def __read(self, directory_path: str, node: dict)->None:
         try:
             with os.scandir(directory_path) as entries:
                 for entry in entries:
-                    name = entry.name
-                    path = entry.path
-
                     if entry.is_file() and not self.only_directories:
-                        node[name] = name
+                        node[entry.name] = entry.name
 
                     if entry.is_dir(follow_symlinks=False):
-                        node[name] = {}
+                        node[entry.name] = {}
 
-                        future = self.executor.submit(self.__read, path, node[name])
-
-                        self.futures.append(future)
+                        self.__read(entry.path, node[entry.name])
 
         except FileNotFoundError:
             print(f'Directory {directory_path} not found.')
