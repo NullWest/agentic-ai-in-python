@@ -8,14 +8,13 @@ class DirectoryTree:
         self.initial_path: str = os.path.abspath(initial_path)
         self.only_directories: bool = only_directories
 
-        self.paths: dict[str, dict] = {}
-
-
     def handle(self)->None:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-            executor.submit(self.__read, self.initial_path, self.paths)
+        paths = {}
 
-        self.__display(self.paths)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            executor.submit(self.__read, self.initial_path, paths)
+
+        self.__display(paths)
 
         executor.shutdown(wait=True)
 
