@@ -1,7 +1,7 @@
 import concurrent.futures
 import os
 import os.path
-import argparse
+from arguments import parse_arguments
 
 class DirectoryTree:
     def __init__(self, initial_path: str, only_directories = False)->None:
@@ -50,22 +50,7 @@ class DirectoryTree:
                 print(name)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        'path',
-        type=str,
-        help='Path to directory to display'
-    )
-
-    parser.add_argument(
-        '--only-directories',
-        action='store_true',
-        help='Only display directories',
-        default = False,
-    )
-
-    args = parser.parse_args()
+    args = parse_arguments()
 
     directory = DirectoryTree(initial_path=args.path, only_directories=args.only_directories)
     directory.handle()
