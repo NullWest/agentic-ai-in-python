@@ -1,4 +1,3 @@
-import concurrent.futures
 import os
 import os.path
 from arguments import parse_arguments
@@ -9,36 +8,45 @@ class DirectoryTree:
         self.only_directories: bool = only_directories
 
     def output(self)->None:
-        paths = {}
+        self.__read(self.initial_path)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-            executor.submit(self.__read, self.initial_path, paths)
+    def __scan(self, root_path: str)->dict:
+        node = {}
 
-        self.__display(paths)
+        stack = [(root_path, node)]
 
-        executor.shutdown(wait=True)
+        while stack:
+            path, current_node = stack.pop()
 
-    def __read(self, directory_path: str, node: dict)->None:
-        try:
-            with os.scandir(directory_path) as entries:
-                for entry in entries:
-                    if entry.is_file() and not self.only_directories:
-                        node[entry.name] = entry.name
+            try:
+                with os.scandir(path) as entries:
+                    for entry in entries:
+                        if entry.is_file() and not self.only_directories:
+                            current_node[entry.name] = entry.name
 
-                    if entry.is_dir(follow_symlinks=False):
-                        node[entry.name] = {}
+                        if entry.is_dir(follow_symlinks=False):
+                            current_node[entry.name] = {}
 
-                        self.__read(entry.path, node[entry.name])
+                            stack.append((entry.path, current_node[entry.name]))
 
-        except FileNotFoundError:
-            print(f'Directory {directory_path} not found.')
-        except PermissionError:
-            print(f'{directory_path} Permission denied.')
-        except Exception as exception:
-            print(f'An unexpected error occurred: {exception}.')
+            except FileNotFoundError:
+                print(f'Directory {root_path} not found.')
+            except PermissionError:
+                print(f'{root_path} Permission denied.')
+            except Exception as exception:
+                print(f'An unexpected error occurred: {exception}.')
+
+        return node
+
+    def __read(self, directory_path: str)->None:
+        tree = self.__scan(directory_path)
+
+        self.__display(tree)
 
     def __display(self, node: dict, depth: int = 0)->None:
-        for key in dict(sorted(node.items())):
+        lexical_order = dict(sorted(node.items()))
+
+        for key in lexical_order:
             value = node[key]
             name = '  ' * depth + key
 
