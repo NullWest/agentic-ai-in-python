@@ -1,5 +1,8 @@
 import os
 import os.path
+import concurrent.futures
+from threading import Lock
+from queue import Queue
 from arguments import parse_arguments
 
 class DirectoryTree:
@@ -11,37 +14,50 @@ class DirectoryTree:
         self.__read(self.initial_path)
 
     def __scan(self, root_path: str)->dict:
-        node = {}
+        tree = {}
 
-        stack = [(root_path, node)]
+        queue = Queue()
+        lock = Lock()
 
-        while stack:
-            path, current_node = stack.pop()
+        queue.put((root_path, tree))
 
-            try:
-                with os.scandir(path) as entries:
-                    for entry in entries:
-                        if entry.is_file() and not self.only_directories:
-                            current_node[entry.name] = entry.name
+        def worker():
+            while True:
+                try:
+                    path, node = queue.get(timeout=0.1)
 
-                        if entry.is_dir(follow_symlinks=False):
-                            current_node[entry.name] = {}
+                    with os.scandir(path) as entries:
+                        for entry in entries:
+                            if entry.is_file() and not self.only_directories:
+                                with lock:
+                                    node[entry.name] = entry.name
 
-                            stack.append((entry.path, current_node[entry.name]))
+                            if entry.is_dir(follow_symlinks=False):
+                                with lock:
+                                    node[entry.name] = {}
 
-            except FileNotFoundError:
-                print(f'Directory {root_path} not found.')
-            except PermissionError:
-                print(f'{root_path} Permission denied.')
-            except Exception as exception:
-                print(f'An unexpected error occurred: {exception}.')
+                                queue.put((entry.path, node[entry.name]))
 
-        return node
+                except FileNotFoundError:
+                    print(f'Directory {root_path} not found.')
+                except PermissionError:
+                    print(f'{root_path} Permission denied.')
+                except Exception as exception:
+                    print(f'An unexpected error occurred: {exception}.')
+                finally:
+                    queue.task_done()
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for _ in range(4):
+                executor.submit(worker)
+
+            queue.join()
+            executor.shutdown(wait=True)
+
+        return tree
 
     def __read(self, directory_path: str)->None:
-        tree = self.__scan(directory_path)
-
-        self.__display(tree)
+        self.__display(self.__scan(directory_path))
 
     def __display(self, node: dict, depth: int = 0)->None:
         lexical_order = dict(sorted(node.items()))
