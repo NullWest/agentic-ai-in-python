@@ -2,49 +2,32 @@ from __future__ import annotations
 
 from typing import List
 
+import math
+
 def is_valid_sudoku(board: List[List[int]]) -> bool:
     """Return True if a partial 9x9 Sudoku board is valid.
 
     Zeros represent blanks and are ignored in duplicate checks.
     """
+    size = len(board)
+    grid_size = int(math.sqrt(size))
 
-    is_valid = True
-    grid_quantity = 3
-    board_length = len(board)
+    for row in range(0, size, grid_size):
+        for col in range(0, size, grid_size):
+            block = []
 
-    for index in range(board_length):
-        position = index * grid_quantity if index > 0 else index
+            for i in range(grid_size):
+                block.extend(board[row + i][col: col + grid_size])
 
-        if position >= board_length:
-            break
-
-        row = board[position]
-        second_row = board[position + 1]
-        third_row = board[position + 2]
-
-        start = 0
-        end = 3
-
-        for _ in row:
-            top = row[start:end]
-            middle = second_row[start:end]
-            bottom = third_row[start:end]
-
-            if has_duplicates(top + middle + bottom):
+            if block and has_duplicates(block):
                 return False
 
-            start += grid_quantity
-            end += grid_quantity
-
-    return is_valid
-
-def ignore_zeros(arr: List[int]) -> List[int]:
-    return list(filter(lambda digit: digit != 0, arr))
+    return True
 
 def has_duplicates(arr: List[int]) -> bool:
-    list_without_zeros = ignore_zeros(arr)
+    values = [x for x in arr if x != 0]
 
-    return len(list_without_zeros) != len(set(list_without_zeros))
+    return len(values) != len(set(values))
 
 if __name__ == "__main__":
     sample = [
